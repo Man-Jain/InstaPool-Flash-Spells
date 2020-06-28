@@ -5,7 +5,7 @@ import {
   executeOperation,
   withdraw,
 } from "./services/Web3Services";
-import { getWeb3Instance } from "./services/index";
+import { getWeb3Instance, getDSAAccounts } from "./services/index";
 import * as Web3 from "web3";
 import {
   CardBody,
@@ -37,10 +37,11 @@ import {
   getProfile,
   setProfiles,
   updateProfiles,
+  getDSAInstance
 } from "./services";
 import * as BigNumber from "bignumber.js";
 import makeBlockie from "ethereum-blockies-base64";
-import { getShortAddress } from "./services/utils";
+import { getShortAddress, getShortDescription } from "./services/utils";
 import GridLoader from "react-spinners/GridLoader";
 import BounceLoader from "react-spinners/BounceLoader";
 import TransactionModal from "./Modal";
@@ -110,6 +111,8 @@ export default class FZapName extends React.Component {
     console.log(args);
 
     const web3 = await getWeb3Instance();
+    const dsa = await getDSAInstance()
+    const accounts = await getDSAAccounts()
 
     // var amt = "1";
     // var args = [
@@ -120,38 +123,10 @@ export default class FZapName extends React.Component {
     const spellID = this.props.match.params.spellUUID;
     console.log(spellID, "spellID");
     const spell = await getspell(spellID);
-    const contractAddress = this.props.location.state
-      ? this.props.location.state.contractAddress
-      : this.state.contract;
-    const executeInstance = await executeOperation(
-      contractAddress,
-      spell.contractABI,
-      args
-    );
+    
+    const spellCode = spell.spellCode
 
-    executeInstance.methods
-      .flashloanWrapper(...args)
-      .send(
-        {
-          from: await defaultAddress(),
-          gas: web3.utils.toHex(2220000),
-          gasPrice: web3.utils.toHex(web3.utils.toWei("100", "gwei")),
-        },
-        (err, txh) => {
-          console.log(txh, err);
-        }
-      )
-      .on("error", (error) => {
-        console.log("error", error);
-        this.setState({ executeTransactionStatus: "failed" });
-      })
-      .on("transactionHash", (executeTransactionHash) => {
-        this.setState({ executeTransactionHash: executeTransactionHash });
-        console.log(executeTransactionHash);
-      })
-      .then((newContractInstance) => {
-        this.setState({ executeTransactionStatus: "done" });
-      });
+    eval(spellCode)
   };
 
   deploy = async () => {
@@ -285,7 +260,7 @@ export default class FZapName extends React.Component {
                           {this.state.currentspell.name}
                         </CardTitle>
                         <p className="CardDescription">
-                          {this.state.currentspell.description}
+                          {getShortDescription(this.state.currentspell.description)}
                         </p>
                         <br />
                         Made By
@@ -452,7 +427,7 @@ export default class FZapName extends React.Component {
                             <CardTitle>
                               Transfer Ownership / Assets to DSA Account{" "}
                             </CardTitle>
-                            Please perform all Post Instapool Flash Loans
+                            Please perform all Ownership/Asset transfers Post Instapool Flash Loans
                             execution operations necessary for the transaction
                             to run successfully. These might be mentioned in the
                             description of the Spells

@@ -8,5 +8,5 @@ export const getShortAddress = (longAddress) => {
 }
 
 export const getShortDescription = (longDescription) => {
-    return longDescription.substring(0, 25) + '...'
+    return longDescription.substring(0, 50) + '...'
 }

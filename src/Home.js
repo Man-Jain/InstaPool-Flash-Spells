@@ -24,7 +24,7 @@ import "./Home.css";
 
 import makeBlockie from "ethereum-blockies-base64";
 
-import { getShortAddress } from "./services/utils";
+import { getShortAddress, getShortDescription } from "./services/utils";
 
 import {
   getspells,
@@ -94,7 +94,7 @@ export default class Home extends React.Component {
                                 {spell.name}
                               </CardTitle>
                               <p className="CardDescription">
-                                {spell.description}
+                                {getShortDescription(spell.description)}
                               </p>
                               <br />
                               Made By
