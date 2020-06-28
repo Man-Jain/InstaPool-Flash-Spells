@@ -45,7 +45,7 @@ export default class Home extends React.Component {
             {" "}
             <h2 className="FlashHeading">Instapool Flash Loans</h2>
             <p className="FlashPara">
-              A Dapp that connects developers who writes Instapool Flash Loans
+              A Dapp that connects developers who writes Flash Loans
               smart contracts and everyone else who would want to use them.
             </p>
             <Button className="LandingPill" pill theme="light">

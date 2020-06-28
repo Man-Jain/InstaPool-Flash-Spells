@@ -32,7 +32,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  getSwift,
+  getspell,
   defaultAddress,
   getProfile,
   setProfiles,
@@ -52,8 +52,8 @@ export default class FZapName extends React.Component {
 
     this.state = {
       asset: "",
-      currentSwiftID: "",
-      currentSwift: null,
+      currentspellID: "",
+      currentspell: null,
       parametersInput: [],
       currentTab: "Summary",
       contract: "",
@@ -68,7 +68,7 @@ export default class FZapName extends React.Component {
       executeTransactionHash: null,
     };
 
-    this.executeSwift = this.executeSwift.bind(this);
+    this.executespell = this.executespell.bind(this);
     this.withdrawAsset = this.withdrawAsset.bind(this);
     this.deploy = this.deploy.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -81,21 +81,21 @@ export default class FZapName extends React.Component {
   };
 
   async componentDidMount() {
-    const swiftID = this.props.match.params.swiftUUID;
-    console.log(swiftID, "swiftID");
+    const spellID = this.props.match.params.spellUUID;
+    console.log(spellID, "spellID");
 
-    const swift = await getSwift(swiftID);
+    const spell = await getspell(spellID);
 
-    console.log("curent siwft", swiftID);
+    console.log("curent siwft", spellID);
     console.log("propsthis", this.props);
-    console.log(swift.contractByteCode);
+    console.log(spell.contractByteCode);
 
-    this.setState({ currentSwift: swift, currentSwiftID: swiftID });
+    this.setState({ currentspell: spell, currentspellID: spellID });
   }
 
-  executeSwift = async () => {
+  executespell = async () => {
     var args = [];
-    this.state.currentSwift.parameters.map(async (param) => {
+    this.state.currentspell.parameters.map(async (param) => {
       if (param.paramType === "AssetAmount") {
         const amt = new BigNumber(
           new BigNumber(this.state[param.paramName]) * new BigNumber(10 ** 18)
@@ -117,15 +117,15 @@ export default class FZapName extends React.Component {
     //   web3.utils.toWei(amt, "ether"),
     // ];
 
-    const swiftID = this.props.match.params.swiftUUID;
-    console.log(swiftID, "swiftID");
-    const swift = await getSwift(swiftID);
+    const spellID = this.props.match.params.spellUUID;
+    console.log(spellID, "spellID");
+    const spell = await getspell(spellID);
     const contractAddress = this.props.location.state
       ? this.props.location.state.contractAddress
       : this.state.contract;
     const executeInstance = await executeOperation(
       contractAddress,
-      swift.contractABI,
+      spell.contractABI,
       args
     );
 
@@ -157,12 +157,12 @@ export default class FZapName extends React.Component {
   deploy = async () => {
     const web3 = await getWeb3Instance();
     this.setState({ deployTransactionStatus: "inProgress" });
-    const swiftID = this.props.match.params.swiftUUID;
-    console.log(swiftID, "swiftID");
-    const swift = await getSwift(swiftID);
+    const spellID = this.props.match.params.spellUUID;
+    console.log(spellID, "spellID");
+    const spell = await getspell(spellID);
     var deployContractInstance = await deployContract(
-      swift.contractByteCode,
-      swift.contractABI
+      spell.contractByteCode,
+      spell.contractABI
     );
 
     let contract;
@@ -176,7 +176,7 @@ export default class FZapName extends React.Component {
     await deployContractInstance
       .deploy({
         from: await defaultAddress(),
-        data: "0x" + swift.contractByteCode,
+        data: "0x" + spell.contractByteCode,
         arguments: [
           "0x1c8756FD2B28e9426CDBDcC7E3c4d64fa9A54728",
           "0x2Ee331840018465bD7Fe74aA4E442b9EA407fBBE",
@@ -209,20 +209,20 @@ export default class FZapName extends React.Component {
         address: userAddress,
         totalUpVotes: 0,
         totalDownVotes: 0,
-        totalSwiftsCreated: 1,
-        userDeployedSwifts: [
+        totalspellsCreated: 1,
+        userDeployedspells: [
           {
-            contractName: swift.name,
-            swiftUUID: this.props.match.params.swiftUUID,
+            contractName: spell.name,
+            spellUUID: this.props.match.params.spellUUID,
             contractAddress: contract,
           },
         ],
       };
       await setProfiles(newUserProfile);
     } else {
-      userProfile.userDeployedSwifts.push({
-        contractName: swift.name,
-        swiftUUID: this.props.match.params.swiftUUID,
+      userProfile.userDeployedspells.push({
+        contractName: spell.name,
+        spellUUID: this.props.match.params.spellUUID,
         contractAddress: contract,
       });
       const updatedProfiles = await updateProfiles(userProfile);
@@ -233,15 +233,15 @@ export default class FZapName extends React.Component {
   withdrawAsset = async () => {
     console.log("this.state", this.state);
     const web3 = await getWeb3Instance();
-    const swiftID = this.props.match.params.swiftUUID;
-    console.log(swiftID, "swiftID");
-    const swift = await getSwift(swiftID);
+    const spellID = this.props.match.params.spellUUID;
+    console.log(spellID, "spellID");
+    const spell = await getspell(spellID);
     const contractAddress = this.props.location.state
       ? this.props.location.state.contractAddress
       : this.state.contract;
     const withdrawInstance = await withdraw(
       contractAddress,
-      swift.contractABI,
+      spell.contractABI,
       this.state.asset
     );
 
@@ -273,7 +273,7 @@ export default class FZapName extends React.Component {
   render() {
     return (
       <div>
-        {this.state.currentSwift ? (
+        {this.state.currentspell ? (
           <div>
             <Container className="main-container">
               <Row>
@@ -282,18 +282,18 @@ export default class FZapName extends React.Component {
                     <center>
                       <CardBody>
                         <CardTitle className="CardTitle">
-                          {this.state.currentSwift.name}
+                          {this.state.currentspell.name}
                         </CardTitle>
                         <p className="CardDescription">
-                          {this.state.currentSwift.description}
+                          {this.state.currentspell.description}
                         </p>
                         <br />
                         Made By
-                        {this.state.currentSwift.rewardFeeAddress ? (
+                        {this.state.currentspell.rewardFeeAddress ? (
                           <div>
                             <img
                               src={makeBlockie(
-                                this.state.currentSwift.rewardFeeAddress
+                                this.state.currentspell.rewardFeeAddress
                               )}
                               alt="address blockie"
                               className="address-blockie"
@@ -301,7 +301,7 @@ export default class FZapName extends React.Component {
                             />
                             <span className="short-address">
                               {getShortAddress(
-                                this.state.currentSwift.rewardFeeAddress
+                                this.state.currentspell.rewardFeeAddress
                               )}
                             </span>
                           </div>
@@ -326,28 +326,28 @@ export default class FZapName extends React.Component {
                         <div>
                           <div className="Votes1">
                             <button
-                              value={this.state.currentSwift.id}
+                              value={this.state.currentspell.id}
                               className="UpVote"
-                              onClick={this.upVoteSwift}
+                              onClick={this.upVotespell}
                             >
                               <FontAwesomeIcon icon={faThumbsUp} />
                             </button>
                           </div>
                           <span className="UpNumber">
-                            {this.state.currentSwift.upVotes}
+                            {this.state.currentspell.upVotes}
                           </span>
 
                           <div className="Votes2">
                             <button
-                              value={this.state.currentSwift.id}
+                              value={this.state.currentspell.id}
                               className="DownVote"
-                              onClick={this.downVoteSwift}
+                              onClick={this.downVotespell}
                             >
                               <FontAwesomeIcon icon={faThumbsDown} />
                             </button>
                           </div>
                           <span className="DownNumber">
-                            {this.state.currentSwift.downVotes}
+                            {this.state.currentspell.downVotes}
                           </span>
                         </div>
                         <br />
@@ -358,7 +358,7 @@ export default class FZapName extends React.Component {
                           pill
                           theme="info"
                           className="UseButton"
-                          name={this.state.currentSwift.id}
+                          name={this.state.currentspell.id}
                           onClick={(e) => {
                             this.setState({ currentTab: "UseNow" });
                           }}
@@ -428,19 +428,19 @@ export default class FZapName extends React.Component {
                     {this.state.currentTab === "Summary" ? (
                       <div className="TabDiv">
                         <h4>Description</h4>
-                        <p>{this.state.currentSwift.description}</p>
+                        <p>{this.state.currentspell.description}</p>
                       </div>
                     ) : null}
                     {this.state.currentTab === "Stats" ? (
                       <div className="TabDiv">
                         <h4>
                           Total Upvotes <FontAwesomeIcon icon={faThumbsUp} /> :{" "}
-                          {this.state.currentSwift.upVotes}
+                          {this.state.currentspell.upVotes}
                         </h4>
                         <h4>
                           Total Downvotes{" "}
                           <FontAwesomeIcon icon={faThumbsDown} /> :{" "}
-                          {this.state.currentSwift.downVotes}
+                          {this.state.currentspell.downVotes}
                         </h4>
                       </div>
                     ) : null}
@@ -472,8 +472,6 @@ export default class FZapName extends React.Component {
                                   </div>
                                 ) : (
                                   <div>
-                                    <br />
-                                    Contract Not Deployed Yet
                                   </div>
                                 )}
                               </div>
@@ -486,7 +484,7 @@ export default class FZapName extends React.Component {
                               <FormGroup>
                                 <div>
                                   <Container>
-                                    {this.state.currentSwift.parameters.map(
+                                    {this.state.currentspell.parameters.map(
                                       (param) => (
                                         <Row>
                                           <Col>
@@ -534,9 +532,9 @@ export default class FZapName extends React.Component {
                                 outline
                                 pill
                                 theme="info"
-                                onClick={this.executeSwift}
+                                onClick={this.executespell}
                               >
-                                Execute Spells
+                                Execute Spell
                               </Button>
                               <br />
                               {this.state.executeTransactionHash !== null ? (
@@ -597,11 +595,11 @@ export default class FZapName extends React.Component {
             </Container>
 
             {/**   <Container className="main-container">
-          <h4 className="Heading">{this.state.currentSwift.name}</h4>
+          <h4 className="Heading">{this.state.currentspell.name}</h4>
           <center>
             <Card className="FzapCard">
               <CardBody>
-                <p>{this.state.currentSwift.description}</p>
+                <p>{this.state.currentspell.description}</p>
               </CardBody>
             </Card>
 
@@ -616,7 +614,7 @@ export default class FZapName extends React.Component {
                     <div>
                       <Container>
                         {
-                          this.state.currentSwift.parameters.map((param) =>
+                          this.state.currentspell.parameters.map((param) =>
                             <Row>
                               <Col>
 
@@ -647,7 +645,7 @@ export default class FZapName extends React.Component {
                     </div>
                   </FormGroup>
                 </Form>
-                <Button onClick={this.executeSwift}>Execute Swift</Button>
+                <Button onClick={this.executespell}>Execute spell</Button>
                 <br/>
                 <Row>
                               <Col>

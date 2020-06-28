@@ -1,36 +1,25 @@
 export const verifyFile = (content) => {
     let str = content.toString().split(' ').join('');
-    const searchStr1 = `constructor(address _addressProvider,address _zapper,address _fzap`
-    const searchStr11= `) FlashLoanReceiverBase(_addressProvider) public { 
-        zapper =_zapper;
-        fzap = _fzap;
-    `;
-    const searchstr2 = `function executeOperation(
-        address _reserve,
-        uint256 _amount,
-        uint256 _fee,
-        bytes calldata _params
-    )
-        external
-        override
-    {
-        require(_amount <= getBalanceInternal(address(this), _reserve), "Invalid balance, was the flashLoan successful?");
-    `;
-    const searchStr3 = `uint totalDebt = _amount.add(_fee);
-    transferFundsBackToPoolInternal(_reserve, totalDebt);
-    }`
-    const searchStr4 = ` function flashloanWrapper(`;
-    const searchStr5 = `) public onlyOwner returns(address) {
-        ERC20 token =  ERC20(_asset);
-         uint amt = (_amount*9)/10000;
-        require(token.balanceOf(address(this))>amt*2);
-        token.transfer(fzap,amt/2);
-        token.transfer(zapper, amt/2);
-        flashloan(_asset,_amount);
-    }`;
-    const searchStr6 = `function flashloan(`;
-    const searchStr7 =`private onlyOwner {`;
-    var stringLists = [searchStr1,searchStr11,searchstr2,searchStr3,searchStr4,searchStr5,searchStr6,searchStr7];
+    const searchStr1 = `let feesEthAmount = borrowAmount * 0.045;`
+    const searchStr11= `dsa.transfer({
+        "token": "eth", // the token key to transfer
+        "amount": dsa.tokens.fromDecimal(feesEthAmount, "eth"), // this helper changes the amount to decimal value
+        "to" : '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1', // default is DSA address
+      }).then(data  => {
+          return  data  // transaction hash
+      }).catch(error  => {
+          return  error
+      });`;
+    const searchStr2 = `dsa.transfer({
+        "token": "eth", // the token key to transfer
+        "amount": dsa.tokens.fromDecimal(feesEthAmount, "eth"), // this helper changes the amount to decimal value
+        "to" : devAddress, // default is DSA address
+      }).then(data  => {
+          return  data  // transaction hash
+      }).catch(error  => {
+          return  error
+      });`
+    var stringLists = [searchStr1,searchStr11, searchStr2];
     var startIndex =0;
     var status= true;
     for(var i = 0; i<stringLists.length;i++){

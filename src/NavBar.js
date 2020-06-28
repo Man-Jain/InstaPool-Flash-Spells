@@ -24,7 +24,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./NavBar.css";
-import { getAccount, getWeb3Instance, defaultAddress } from "./services";
+import { getAccount, getWeb3Instance, defaultAddress, getDSAInstance, getDSAAccounts } from "./services";
 
 import { getShortAddress } from "./services/utils";
 
@@ -51,7 +51,9 @@ export default class NavBar extends React.Component {
 
   async getWeb3() {
     await getAccount();
-    const userAddress = await defaultAddress();
+    await getDSAInstance()
+    const addresses = await getDSAAccounts()
+    const userAddress = addresses[0].address
 
     const shortUserAddress = getShortAddress(userAddress);
     this.setState({
@@ -83,7 +85,7 @@ export default class NavBar extends React.Component {
       <HashRouter>
         <Navbar className="navbar" expand="md">
           <NavbarBrand className="Link" href="#" to="/">
-            FZap
+            Flash Spells
           </NavbarBrand>
           <NavbarToggler onClick={this.toggleNavbar} />
 

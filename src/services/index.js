@@ -3,13 +3,15 @@ import IdentityWallet from "identity-wallet";
 import Onboard from "bnc-onboard";
 import * as Web3 from "web3";
 import { upload } from "skynet-js";
+import DSA from "dsa-sdk";
 
 const seed =
-  "0x5acca0ba544b6bb3f6ad3cfdcd385b76a2c1587250f0036f00d1d476bbb679b3";
+  "0x5bcca0ba544b6bb3f6ad3cfdcd385b76a2c1587250f0036f00d1d476bbb679b3";
 
 let box;
 let space = null;
 let web3;
+let dsa;
 
 const rpcUrl = "https://ropsten.infura.io/v3/8b8d0c60bfab43bc8725df20fc660d15";
 
@@ -68,6 +70,30 @@ export const getAccount = async () => {
   await onboard.walletCheck();
 };
 
+export const getDSAInstance = async () => {
+  if (!web3) {
+    await getAccount();
+  }
+  dsa = new DSA(web3);
+  console.log("dsa is", dsa);
+  return dsa;
+};
+
+export const getDSAAccounts = async () => {
+  console.log("getting address");
+  const address = await defaultAddress();
+  const accounts = await dsa.getAccounts(address);
+  console.log("DSA Accounts", accounts);
+  if (accounts.length > 1) {
+    dsa.build().then(async (hash) => {
+      console.log("DSA Hash", hash);
+      const accounts = await dsa.getAccounts(address)
+      return accounts
+    });
+  }
+  return accounts
+}
+
 export const defaultAddress = async () => {
   if (!web3) {
     await getAccount();
@@ -93,142 +119,149 @@ const getConsent = async ({ type, origin, spaces }) => {
 
 export const get3BoxInstance = async () => {
   const idWallet = new IdentityWallet(getConsent, { seed });
+  console.log(idWallet);
+  
   const threeIdProvider = idWallet.get3idProvider();
+  console.log(threeIdProvider);
+  
   box = await Box.openBox(null, threeIdProvider);
+  console.log(box);
+  
   await box.syncDone;
 };
 
 export const getSpace = async () => {
   await get3BoxInstance();
-  space = await box.openSpace("FlashLoans");
+  space = await box.openSpace("InstaPool");
+  
 };
 
-export const getSwifts = async () => {
+export const getspells = async () => {
   if (!space) {
     await get3BoxInstance();
     await getSpace();
   }
-  const swifts = await space.public.get("swiftsLists");
-  return swifts;
+  const spells = await space.public.get("spellsLists");
+  return spells;
 };
 
-export const getSwift = async (swiftID) => {
-  const allSwifts = await getSwifts();
-  console.log("All Swifts", allSwifts);
-  const swift = allSwifts.find((swift) => swift.id === swiftID);
-  console.log("swift", swift);
-  return swift;
+export const getspell = async (spellID) => {
+  const allspells = await getspells();
+  console.log("All spells", allspells);
+  const spell = allspells.find((spell) => spell.id === spellID);
+  console.log("spell", spell);
+  return spell;
 };
 
-export const setSwifts = async (swiftData) => {
-  let swifts = [];
+export const setspells = async (spellData) => {
+  let spells = [];
 
-  swifts = await getSwifts();
+  spells = await getspells();
 
-  if (swifts == undefined) {
-    swifts = [];
+  if (spells == undefined) {
+    spells = [];
   }
 
-  console.log("swifts", swifts);
+  console.log("spells", spells);
 
-  swifts.push(swiftData);
-  await space.public.set("swiftsLists", swifts);
+  spells.push(spellData);
+  await space.public.set("spellsLists", spells);
 
-  const newSwifts = await getSwifts();
-  console.log("now Swifts", newSwifts);
+  const newspells = await getspells();
+  console.log("now spells", newspells);
 };
 
-export const updateSwifts = async (newSwifts) => {
-  space.public.set("swiftsLists", newSwifts);
+export const updatespells = async (newspells) => {
+  space.public.set("spellsLists", newspells);
 
-  const newUpdatedSwifts = await getSwifts();
-  console.log("now Updated Swifts", newUpdatedSwifts);
+  const newUpdatedspells = await getspells();
+  console.log("now Updated spells", newUpdatedspells);
 
-  return newUpdatedSwifts;
+  return newUpdatedspells;
 };
 
-export const upVoteSwift = async (swiftID) => {
-  console.log(swiftID, "swiftID");
-  let currentSwifts = await getSwifts();
+export const upVotespell = async (spellID) => {
+  console.log(spellID, "spellID");
+  let currentspells = await getspells();
 
-  const selectedSwiftIndex = currentSwifts.findIndex((filter) => {
-    return filter.id === swiftID;
+  const selectedspellIndex = currentspells.findIndex((filter) => {
+    return filter.id === spellID;
   });
 
   const currentUserAddress = await defaultAddress();
 
-  const voterInstanceIndex = currentSwifts[selectedSwiftIndex].voters.findIndex(
+  const voterInstanceIndex = currentspells[selectedspellIndex].voters.findIndex(
     (voter) => voter.voterAddress === currentUserAddress
   );
 
   if (voterInstanceIndex !== -1) {
     console.log("Already Voted");
     const currentVote =
-      currentSwifts[selectedSwiftIndex].voters[voterInstanceIndex].vote;
+      currentspells[selectedspellIndex].voters[voterInstanceIndex].vote;
     if (currentVote === true) {
       console.log("Deleteing Vote");
-      currentSwifts[selectedSwiftIndex].upVotes--;
-      currentSwifts[selectedSwiftIndex].voters.splice(voterInstanceIndex, 1);
+      currentspells[selectedspellIndex].upVotes--;
+      currentspells[selectedspellIndex].voters.splice(voterInstanceIndex, 1);
     } else {
       console.log("Already Voted Down");
     }
     return;
   } else {
-    currentSwifts[selectedSwiftIndex].voters.push({
+    currentspells[selectedspellIndex].voters.push({
       voterAddress: currentUserAddress,
       vote: true,
     });
-    currentSwifts[selectedSwiftIndex].upVotes++;
+    currentspells[selectedspellIndex].upVotes++;
   }
 
-  const newUpdatedSwifts = await updateSwifts(currentSwifts);
-  return newUpdatedSwifts;
+  const newUpdatedspells = await updatespells(currentspells);
+  return newUpdatedspells;
 };
 
-export const downVoteSwift = async (swiftID) => {
-  console.log(swiftID, "swiftID");
-  let currentSwifts = await getSwifts();
+export const downVotespell = async (spellID) => {
+  console.log(spellID, "spellID");
+  let currentspells = await getspells();
 
-  const selectedSwiftIndex = currentSwifts.findIndex((filter) => {
-    return filter.id === swiftID;
+  const selectedspellIndex = currentspells.findIndex((filter) => {
+    return filter.id === spellID;
   });
 
   const currentUserAddress = await defaultAddress();
 
-  const voterInstanceIndex = currentSwifts[selectedSwiftIndex].voters.findIndex(
+  const voterInstanceIndex = currentspells[selectedspellIndex].voters.findIndex(
     (voter) => voter.voterAddress === currentUserAddress
   );
 
   if (voterInstanceIndex !== -1) {
     console.log("Already Voted");
     const currentVote =
-      currentSwifts[selectedSwiftIndex].voters[voterInstanceIndex].vote;
+      currentspells[selectedspellIndex].voters[voterInstanceIndex].vote;
     if (currentVote === false) {
       console.log("Deleting Vote");
-      currentSwifts[selectedSwiftIndex].downVotes--;
-      currentSwifts[selectedSwiftIndex].voters.splice(voterInstanceIndex, 1);
-      console.log("This voters", currentSwifts[selectedSwiftIndex].voters);
+      currentspells[selectedspellIndex].downVotes--;
+      currentspells[selectedspellIndex].voters.splice(voterInstanceIndex, 1);
+      console.log("This voters", currentspells[selectedspellIndex].voters);
     } else {
       console.log("Already Voted Up");
     }
     return;
   } else {
-    currentSwifts[selectedSwiftIndex].voters.push({
+    currentspells[selectedspellIndex].voters.push({
       voterAddress: currentUserAddress,
       vote: false,
     });
-    currentSwifts[selectedSwiftIndex].downVotes++;
+    currentspells[selectedspellIndex].downVotes++;
   }
 
-  const newUpdatedSwifts = await updateSwifts(currentSwifts);
-  return newUpdatedSwifts;
+  const newUpdatedspells = await updatespells(currentspells);
+  return newUpdatedspells;
 };
 
-export const getUserSwifts = async () => {};
+export const getUserspells = async () => {};
 
 const DefaultUploadOptions = {
   portalUrl: "https://siasky.net",
-  portalUploadPath: "/skynet/flashSwift",
+  portalUploadPath: "/skynet/flashspell",
   portalFileFieldname: "file",
   portalDirectoryFileFieldname: "files[]",
   customFilename: "",
@@ -248,14 +281,15 @@ export const uploadToSkynet = async (file) => {
   };
 
   const portalUrl = "https://siasky.net";
-  const portalUploadPath = "/skynet/flashswifts";
+  const portalUploadPath = "/skynet/flashSpell";
 
   const url = `${trimTrailingSlash(portalUrl)}${trimTrailingSlash(
     portalUploadPath
   )}`;
-
+  console.log(url)
+  console.log('Loading')
   try {
-    const { skylink } = await upload(url, file, { onUploadProgress });
+    const { skylink } = await upload(url, file, {onUploadProgress});
     console.log("Skylink", skylink);
     return skylink;
   } catch (error) {
@@ -331,7 +365,7 @@ export const updateProfiles = async (newProfile) => {
   space.public.set("profileList", allProfiles);
 
   const newUpdatedProfiles = await getProfiles();
-  console.log("now Updated Swifts", newUpdatedProfiles);
+  console.log("now Updated spells", newUpdatedProfiles);
 
   return newUpdatedProfiles;
 };

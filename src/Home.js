@@ -27,12 +27,12 @@ import makeBlockie from "ethereum-blockies-base64";
 import { getShortAddress } from "./services/utils";
 
 import {
-  getSwifts,
+  getspells,
   getSpace,
-  setSwifts,
+  setspells,
   defaultAddress,
-  upVoteSwift,
-  downVoteSwift,
+  upVotespell,
+  downVotespell,
 } from "./services";
 
 export default class Home extends React.Component {
@@ -40,35 +40,35 @@ export default class Home extends React.Component {
     super(props);
 
     this.state = {
-      swifts: null,
+      spells: null,
     };
 
-    this.downVoteSwift = this.downVoteSwift.bind(this);
-    this.upVoteSwift = this.upVoteSwift.bind(this);
+    this.downVotespell = this.downVotespell.bind(this);
+    this.upVotespell = this.upVotespell.bind(this);
   }
 
   async componentDidMount() {
     await getSpace();
-    let swiftList = await getSwifts();
+    let spellList = await getspells();
 
-    console.log("swifts", swiftList);
+    console.log("spells", spellList);
 
-    if (swiftList === undefined) {
-      swiftList = [];
-      this.setState({ swifts: swiftList });
+    if (spellList === undefined) {
+      spellList = [];
+      this.setState({ spells: spellList });
     } else {
-      this.setState({ swifts: swiftList });
+      this.setState({ spells: spellList });
     }
   }
 
-  async downVoteSwift(swiftID) {
-    const newSwifts = await downVoteSwift(swiftID);
-    this.setState({ swift: newSwifts });
+  async downVotespell(spellID) {
+    const newspells = await downVotespell(spellID);
+    this.setState({ spell: newspells });
   }
 
-  async upVoteSwift(swiftID) {
-    const newSwifts = await upVoteSwift(swiftID);
-    this.setState({ swift: newSwifts });
+  async upVotespell(spellID) {
+    const newspells = await upVotespell(spellID);
+    this.setState({ spell: newspells });
   }
 
   render() {
@@ -83,31 +83,31 @@ export default class Home extends React.Component {
             </string>{" "}
             <div className="Cards">
               <Row>
-                {this.state.swifts ? (
-                  this.state.swifts.map((swift) => (
+                {this.state.spells ? (
+                  this.state.spells.map((spell) => (
                     <div>
                       <Col sm="12" md="4" lg="3">
                         <Card className="Card">
                           <center>
                             <CardBody className="CardBody">
                               <CardTitle className="CardTitle">
-                                {swift.name}
+                                {spell.name}
                               </CardTitle>
                               <p className="CardDescription">
-                                {swift.description}
+                                {spell.description}
                               </p>
                               <br />
                               Made By
-                              {swift.rewardFeeAddress ? (
+                              {spell.rewardFeeAddress ? (
                                 <div>
                                   <img
-                                    src={makeBlockie(swift.rewardFeeAddress)}
+                                    src={makeBlockie(spell.rewardFeeAddress)}
                                     alt="address blockie"
                                     className="address-blockie"
                                     width="15"
                                   />
                                   <span className="short-address">
-                                    {getShortAddress(swift.rewardFeeAddress)}
+                                    {getShortAddress(spell.rewardFeeAddress)}
                                   </span>
                                 </div>
                               ) : (
@@ -131,26 +131,26 @@ export default class Home extends React.Component {
                               <div>
                                 <div className="Votes1">
                                   <button
-                                    onClick={(e) => this.upVoteSwift(swift.id)}
+                                    onClick={(e) => this.upVotespell(spell.id)}
                                   >
                                     <FontAwesomeIcon icon={faThumbsUp} />
                                   </button>
                                 </div>
                                 <span className="UpNumber">
-                                  {swift.upVotes}
+                                  {spell.upVotes}
                                 </span>
 
                                 <div className="Votes2">
                                   <button
                                     onClick={(e) =>
-                                      this.downVoteSwift(swift.id)
+                                      this.downVotespell(spell.id)
                                     }
                                   >
                                     <FontAwesomeIcon icon={faThumbsDown} />
                                   </button>
                                 </div>
                                 <span className="DownNumber">
-                                  {swift.downVotes}
+                                  {spell.downVotes}
                                 </span>
                               </div>
                               <br />
@@ -161,7 +161,7 @@ export default class Home extends React.Component {
                                 pill
                                 theme="info"
                                 className="UseButton"
-                                name={swift.id}
+                                name={spell.id}
                                 onClick={(e) => {
                                   this.props.history.push(
                                     "/spell/" + e.target.name

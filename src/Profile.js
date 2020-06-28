@@ -51,7 +51,7 @@ export default class Profile extends React.Component {
       address: this.state.userAddress,
       totalUpVotes: 0,
       totalDownVotes: 0,
-      totalSwiftsCreated: 1,
+      totalspellsCreated: 1,
     };
     console.log(newUserProfile, "newUserProfile");
     const newProfiles = await setProfiles(newUserProfile);
@@ -87,7 +87,7 @@ export default class Profile extends React.Component {
                       <Col>
                         <center>
                           <div className="Div1">
-                            <h4>{this.state.userProfile.totalSwiftsCreated}</h4>
+                            <h4>{this.state.userProfile.totalspellsCreated}</h4>
                             <h6>
                               Spells <FontAwesomeIcon icon={faAddressCard} />{" "}
                             </h6>
@@ -114,23 +114,23 @@ export default class Profile extends React.Component {
             <br />
             <br />
             <h2 className="Heading">Your Spells</h2>
-            {this.state.userProfile.userDeployedSwifts.length > 0
-              ? this.state.userProfile.userDeployedSwifts.map((swift) => (
+            {this.state.userProfile.userDeployedspells.length > 0
+              ? this.state.userProfile.userDeployedspells.map((spell) => (
                   <div>
                     <center>
-                      <Card className="UserSwifts">
+                      <Card className="Userspells">
                         <CardBody>
-                          <CardTitle>{swift.contractName}</CardTitle>
-                          {swift.contractAddress}
+                          <CardTitle>{spell.contractName}</CardTitle>
+                          {spell.contractAddress}
                         </CardBody>
                         <CardFooter>
                           <Button
                             theme="info"
                             onClick={(e) => {
                               this.props.history.push({
-                                pathname: "/spell/" + swift.swiftUUID,
+                                pathname: "/spell/" + spell.spellUUID,
                                 state: {
-                                  contractAddress: swift.contractAddress,
+                                  contractAddress: spell.contractAddress,
                                 },
                               });
                             }}

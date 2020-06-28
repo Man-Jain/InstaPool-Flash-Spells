@@ -28,7 +28,7 @@ class App extends React.Component {
               <Route exact path="/" component={Landing} />
               <Route path="/home" component={Home} />
               <Route path="/new-zap" component={NewZap} />
-              <Route path="/spell/:swiftUUID" component={FzapName} />
+              <Route path="/spell/:spellUUID" component={FzapName} />
               <Route path="/profile/:userAddress" component={Profile} />
             </Switch>
           </HashRouter>

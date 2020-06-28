@@ -17,8 +17,8 @@ import {
 } from "shards-react";
 import {
   getSpace,
-  setSwifts,
-  upVoteSwift,
+  setspells,
+  upVotespell,
   uploadToSkynet,
   compileCode,
   getProfile,
@@ -55,8 +55,8 @@ export default class NewZap extends React.Component {
       currentParamType: "",
       filereader: null,
       skylink: null,
-      contractFile: null,
-      contractByteCode: null,
+      spellFile: null,
+      spellCode: null,
       contractABI: null,
       rewardFeeAddress: "",
       open: false,
@@ -65,7 +65,7 @@ export default class NewZap extends React.Component {
       showAlert: false,
     };
 
-    this.addSwift = this.addSwift.bind(this);
+    this.addspell = this.addspell.bind(this);
     this.addParameter = this.addParameter.bind(this);
     this.handleFileChosen = this.handleFileChosen.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -91,47 +91,47 @@ export default class NewZap extends React.Component {
   testUpload = async () => {
     console.log("state is", this.state);
     console.log("Uploading File to Skynet");
-    if (this.state.contractFile) {
-      await uploadToSkynet(this.state.contractFile);
+    if (this.state.spellFile) {
+      await uploadToSkynet(this.state.spellFile);
     }
   };
 
-  handleFileRead = (contractFile) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsText(contractFile);
-      fileReader.onloadend = (e) => {
-        const content = fileReader.result;
-        var resp = verifyFile(content.toString());
-        //    var resp = verifyFileUniSwap(content.toString());
+  // handleFileRead = (spellFile) => {
+  //   return new Promise((resolve, reject) => {
+  //     const fileReader = new FileReader();
+  //     fileReader.readAsText(spellFile);
+  //     fileReader.onloadend = (e) => {
+  //       const content = fileReader.result;
+  //       var isCorrect = verifyFile(content.toString());
+  //       //    var resp = verifyFileUniSwap(content.toString());
+  //       console.log("isCorrect", isCorrect);
+  //       if (isCorrect) {
+  //         this.setState({ filereader: fileReader });
+  //       }
+  //       resolve(isCorrect);
+  //     };
+  //   });
+  // };
 
-        const isCorrect = true;
-        console.log("isCorrect", isCorrect);
-        if (isCorrect) {
-          this.setState({ filereader: fileReader });
-        }
-        resolve(isCorrect);
-      };
-    });
-  };
+  handleFileRead = () => {
+          const content = this.state.spellCode
+          var isCorrect = verifyFile(content);
+          //    var resp = verifyFileUniSwap(content.toString());
+          console.log("isCorrect", isCorrect);
+          return isCorrect
+    };
 
   handleFileChosen = async (e) => {
     console.log("file", e.target.files[0]);
     const file = e.target.files[0];
 
-    const isCorrect = await this.handleFileRead(file);
-    console.log("filereader", this.state.filereader);
-    if (!isCorrect) {
-      return;
-    }
-
-    this.setState({ contractFile: file });
+    
   };
 
-  addSwift = async () => {
-    if (!this.state.contractFile) {
+  addspell = async () => {
+    const isCorrect = this.handleFileRead();
+    if (!isCorrect) {
       this.setState({ showAlert: true });
-      return;
     } else {
       this.setState({ showAlert: false });
     }
@@ -139,25 +139,27 @@ export default class NewZap extends React.Component {
     this.toggle();
     this.setState({
       currentStatus: "inProgress",
-      modalContent: "Adding Your Spells...Please Wait",
+      modalContent: "Adding Your Spell...Please Wait",
     });
     const space = await getSpace();
-    const swiftUUID = uuidv4();
+    console.log(space)
+    const spellUUID = uuidv4();
     let skylink;
 
-    if (this.state.contractFile) {
-      skylink = await uploadToSkynet(this.state.contractFile);
-      if (skylink === "error") {
-        this.setState({
-          currentStatus: "failed",
-          modalContent: "Adding Spells Failed! Please Try Again",
-        });
-        return;
-      }
-    }
+    // if (this.state.spellFile) {
+    //   skylink = await uploadToSkynet(this.state.spellFile);
+    //   console.log(skylink)
+    //   if (skylink === "error") {
+    //     this.setState({
+    //       currentStatus: "failed",
+    //       modalContent: "Adding Spell Failed! Please Try Again",
+    //     });
+    //     return;
+    //   }
+    // }
 
-    const swift = {
-      id: swiftUUID,
+    const spell = {
+      id: spellUUID,
       name: this.state.name,
       description: this.state.description,
       parameters: this.state.parameters,
@@ -166,29 +168,31 @@ export default class NewZap extends React.Component {
       downVotes: 0,
       contractSourceSkylink: skylink,
       contractABI: this.state.contractABI,
-      contractByteCode: this.state.contractByteCode,
+      spellCode: this.state.spellCode,
       rewardFeeAddress: this.state.rewardFeeAddress,
     };
 
     let userProfile = await getProfile(userAddress);
-
+    console.log(userProfile)
     if (!userProfile) {
       const newUserProfile = {
         address: userAddress,
         totalUpVotes: 0,
         totalDownVotes: 0,
-        totalSwiftsCreated: 1,
-        userDeployedSwifts: [],
+        totalspellsCreated: 1,
+        userDeployedspells: [],
       };
 
       await setProfiles(newUserProfile);
+      console.log(newUserProfile)
     } else {
-      userProfile.totalSwiftsCreated = userProfile.totalSwiftsCreated++;
+      userProfile.totalspellsCreated = userProfile.totalspellsCreated++;
       const updatedProfiles = await updateProfiles(userProfile);
       console.log("Successfully Updated");
     }
 
-    await setSwifts(swift);
+    await setspells(spell);
+    console.log('setting spells')
     this.setState({
       currentStatus: "done",
       modalContent: "Spell Successfully Added",
@@ -201,7 +205,7 @@ export default class NewZap extends React.Component {
         {this.state.showAlert ? (
           <Alert className="fileAlert" theme="danger">
             <center>
-              File Not Uploaded or It does not fulfill requirements
+              Spell Code Not Provided or It does not fulfill requirements
             </center>
           </Alert>
         ) : null}
@@ -267,21 +271,21 @@ export default class NewZap extends React.Component {
                     id="#contract"
                     placeholder="Spell Code"
                     onChange={(e) => {
-                      this.setState({ contractByteCode: e.target.value });
+                      this.setState({ spellCode: e.target.value });
                     }}
                   />
                 </FormGroup>
 
                 <FormGroup>
                   <label className="Lable" htmlFor="#choose">
-                    Choose
+                  Upload Spell Code in File
                   </label>
                   <FormInput
                     className="Choose"
                     type="file"
                     id="file"
                     className="input-file"
-                    accept=".sol"
+                    accept=".txt"
                     onChange={this.handleFileChosen}
                   />
                 </FormGroup>
@@ -376,7 +380,7 @@ export default class NewZap extends React.Component {
                     outline
                     pill
                     theme="info"
-                    onClick={this.addSwift}
+                    onClick={this.addspell}
                   >
                     <FontAwesomeIcon className="Icon1" icon={faPlus} />
                     Add Spells
