@@ -26,7 +26,7 @@ https://imgur.com/a/ST5y0XS
 
 
 ## Tech Stack Used
-s
+
 - React
 - Web3
 - Portis
