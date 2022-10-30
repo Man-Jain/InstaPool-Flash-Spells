@@ -1,27 +1,30 @@
+/* Style In Navbar */
 .NavItem {
   margin-left: 5%;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
 .NavItem1 {
   margin-left: 5%;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.WalletButton {
-}
 .Nav {
   width: 100%;
   float: right;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
 .Link {
   color: #00b8d8;
   font-size: large;
 }
+
 .Link:hover {
   text-decoration: none;
   color: azure;
 }
+
 .HeadingWallet {
   width: 130%;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -31,11 +34,13 @@
   border-radius: 50%;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
 .navbar {
   background-color: #001021;
   color: white;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
 .NavIcon {
   margin-right: 0.5rem;
 }
