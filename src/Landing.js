@@ -46,7 +46,7 @@ export default class Home extends React.Component {
             <h2 className="FlashHeading">Instapool Flash Loans</h2>
             <p className="FlashPara">
               A Dapp that connects developers who writes Flash Loans
-              smart contracts and everyone else who would want to use them.
+              smart contracts and everyone who would want to use them.
             </p>
             <Button className="LandingPill" pill theme="light">
               What is Instapool Flash Loans?
@@ -61,8 +61,7 @@ export default class Home extends React.Component {
         </div>
         <div id="aboutus" className="CarouselDiv">
           <center>
-            {" "}
-            <h2 className="Heading5">What We Provide Here</h2>
+            <h2 className="Heading5">What We Provide Here?</h2>
             <div className="BelowHeading">
               <Card className="CarouselCard">
                 <CarouselProvider
@@ -75,11 +74,11 @@ export default class Home extends React.Component {
                       <img className="WhatImg" src={What1} />
                     </Slide>
                     <Slide index={1}>
-                      {" "}
+                      
                       <img className="WhatImg" src={What2} />
                     </Slide>
                     <Slide index={2}>
-                      {" "}
+                     
                       <img className="WhatImg" src={What3} />
                     </Slide>
                   </Slider>
@@ -96,7 +95,6 @@ export default class Home extends React.Component {
 
         <div id="forusers" className="UserDiv">
           <center>
-            {" "}
             <h2 className="Heading6">For users</h2>
           </center>
           <div className="CardsDiv">
@@ -106,7 +104,6 @@ export default class Home extends React.Component {
                   <Card className="UserCard">
                     <CardImg className="UserImage" top src={Withdraw1} />
                     <center>
-                      {" "}
                       <CardBody>
                         <h3>Step 1</h3>
                         <h5>Pick a Spells </h5>
@@ -118,7 +115,6 @@ export default class Home extends React.Component {
                   <Card className="UserCard">
                     <CardImg className="UserImage" top src={Withdraw2} />
                     <center>
-                      {" "}
                       <CardBody>
                         <h3>Step 2</h3>
                         <h5>Deploy the Spells</h5>
@@ -152,10 +148,9 @@ export default class Home extends React.Component {
                   <Card className="UserCard">
                     <CardImg className="UserImage" top src={Withdraw5} />
                     <center>
-                      {" "}
                       <CardBody>
                         <h3>Step 5</h3>
-                        <h5>Withdraw assets</h5>{" "}
+                        <h5>Withdraw assets</h5>
                       </CardBody>
                     </center>
                   </Card>
@@ -167,7 +162,6 @@ export default class Home extends React.Component {
 
         <div id="fordevelopers" className="DeveloperDiv">
           <center>
-            {" "}
             <h3 className="DHeading">For Developers</h3>
           </center>
           <div>
